@@ -1,0 +1,35 @@
+#define TEMP_PIN 34
+#define FAN_PIN 5
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(FAN_PIN, OUTPUT);
+}
+
+void loop() {
+  int analogValue = analogRead(TEMP_PIN);
+
+  // FIX: invert the mapping
+  float temperature = map(analogValue, 4095, 0, 0, 50);
+
+  int pwmValue = 0;
+
+  if (temperature < 27) {
+    pwmValue = 0;   // OFF
+  } 
+  else if (temperature >= 40) {
+    pwmValue = 255; // FULL ON
+  } 
+  else {
+    pwmValue = (int)((temperature - 27) * (255.0 / 13.0));
+  }
+
+  analogWrite(FAN_PIN, pwmValue);
+
+  Serial.print("Temp: ");
+  Serial.print(temperature);
+  Serial.print("C, PWM: ");
+  Serial.println(pwmValue);
+
+  delay(500);
+}
